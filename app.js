@@ -47,7 +47,7 @@ app.post("/discount/:cartid", (req, res) => {
     cart: {
       discounts: [
         {
-          discounted_amount: -2,
+          discounted_amount: 2,
           name: "manual",
         },
       ],

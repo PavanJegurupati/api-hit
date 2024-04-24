@@ -47,7 +47,7 @@ app.post("/discount/:cartid", (req, res) => {
     cart: {
       discounts: [
         {
-          discounted_amount: 2,
+          discounted_amount: -2,
           name: "manual",
         },
       ],
@@ -200,6 +200,42 @@ app.get("/addmetafields/:orderid", async (req, res) => {
     console.error("There was an error with the fetch operation:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+app.get("/metafields/:cartid", (req, res) => {
+  const cart_id = req.params.cartid;
+  const myHeaders = new Headers();
+  myHeaders.append("X-Auth-Token", "oe5uijwhafstu69o0vj50kr7q5jv5c7");
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Access-Control-Allow-Origin", "*");
+
+  const raw = JSON.stringify({
+    permission_set: "write_and_sf_access",
+    namespace: "Cart Metafields",
+    key: "UPS",
+    value: "Account Number",
+    description: "Payment Method",
+  });
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  fetch(
+    `https://api.bigcommerce.com/stores/{store_hash}/v3/carts/${cart_id}/metafields`,
+    requestOptions
+  )
+    .then((response) => response.json())
+    .then((result) => {
+      console.log(result);
+      res.json({ result });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send("error", error);
+    });
 });
 
 // Define port

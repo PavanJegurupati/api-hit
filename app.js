@@ -33,7 +33,8 @@ app.get("/cart/:cartid", (req, res) => {
   }
 });
 
-app.post("/discount/:cartid", (req, res) => {
+app.post("/metafields/:cartid", (req, res) => {
+  
   const cartid = req.params.cartid;
   const myHeaders = new Headers();
   myHeaders.append("X-Auth-Token", "44v4r4o38ki0gznr4kn5exdznzft69c");
@@ -43,35 +44,7 @@ app.post("/discount/:cartid", (req, res) => {
   const formData = JSON.stringify(req.body.formData);
   console.log(formData, "this is formData");
 
-  const raw = JSON.stringify({
-    cart: {
-      discounts: [
-        {
-          discounted_amount: 2,
-          name: "manual",
-        },
-      ],
-    },
-  });
 
-  const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  fetch(
-    `https://api.bigcommerce.com/stores/eagnf01idv/v3/checkouts/${cartid}/discounts`,
-    requestOptions
-  )
-    .then((response) => response.json())
-    .then((result) => {
-      console.log("RESULT FROM discount: ", result);
-    })
-    .catch((error) => {
-      console.error("error while adding disocunt:", error);
-    });
 
   async function addMetafield() {
     try {
@@ -97,9 +70,12 @@ app.post("/discount/:cartid", (req, res) => {
 
       const response = await fetch(url, requestOptions2);
       const result = await response.json();
-      console.log("esult form metafield api:", result);
-    } catch (error) {
+      console.log("result form metafield api:", result);
+      res.status(200).json({ success: true, message: "Metafield added successfully." });
+      
+    } catch (error) { 
       console.error("Error adding metafield:", error);
+      res.status(500).json({ success: false, message: "Failed to add metafield." });
     }
   }
 
@@ -140,24 +116,26 @@ app.get("/addmetafields/:orderid", async (req, res) => {
     myHeaders2.append("Content-Type", "application/json");
     myHeaders2.append("Accept", "application/json");
 
+    
+
     const requestOptions2 = {
       method: "GET",
       headers: myHeaders,
-
+   
       redirect: "follow",
     };
 
     async function addToOrderMetafields(metafields, orderId) {
-      console.log("inside addtoordee: ");
+      console.log('inside addtoordee: ');
       try {
         const bodyData = {
           permission_set: "write_and_sf_access",
           namespace: "FormData",
-          key: "FormData",
+          key:  "FormData",
           value: JSON.stringify(metafields), // Ensure formData is defined before using it
           description: "Name of staff member",
         };
-
+    
         const response = await fetch(
           `https://api.bigcommerce.com/stores/eagnf01idv/v3/orders/${orderId}/metafields`,
           {
@@ -169,11 +147,11 @@ app.get("/addmetafields/:orderid", async (req, res) => {
             body: JSON.stringify(bodyData),
           }
         );
-
+    
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-
+    
         const result = await response.json();
         console.log(result);
       } catch (error) {
@@ -202,41 +180,7 @@ app.get("/addmetafields/:orderid", async (req, res) => {
   }
 });
 
-app.get("/metafields/:cartid", (req, res) => {
-  const cart_id = req.params.cartid;
-  const myHeaders = new Headers();
-  myHeaders.append("X-Auth-Token", "oe5uijwhafstu69o0vj50kr7q5jv5c7");
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("Access-Control-Allow-Origin", "*");
 
-  const raw = JSON.stringify({
-    permission_set: "write_and_sf_access",
-    namespace: "Cart Metafields",
-    key: "UPS",
-    value: "Account Number",
-    description: "Payment Method",
-  });
-  const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  fetch(
-    `https://api.bigcommerce.com/stores/{store_hash}/v3/carts/${cart_id}/metafields`,
-    requestOptions
-  )
-    .then((response) => response.json())
-    .then((result) => {
-      console.log(result);
-      res.json({ result });
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send("error", error);
-    });
-});
 
 // Define port
 const PORT = process.env.PORT || 3000;

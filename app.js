@@ -33,6 +33,30 @@ app.get("/cart/:cartid", (req, res) => {
   }
 });
 
+
+app.get("/getCartMetafields/:cartid", async(req,res) => {
+    const cartId = req.params.cartid;
+    const myHeaders = new Headers();
+    myHeaders.append("X-Auth-Token", "44v4r4o38ki0gznr4kn5exdznzft69c");
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Access-Control-Allow-Origin", "*");
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+    try {
+        const response = await fetch(`https://api.bigcommerce.com/stores/eagnf01idv/v3/carts/${cartId}/metafields`, requestOptions);
+        const data = await response.json();
+        console.log(data);
+        res.send(data);
+    } catch (error) {
+        res.status(500).send({ error: "Failed to fetch cart data" });
+    }
+  });
+
+
+
 app.post("/metafields/:cartid", (req, res) => {
   
   const cartid = req.params.cartid;

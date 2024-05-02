@@ -37,7 +37,7 @@ app.post("/metafields/:cartid", (req, res) => {
   
   const cartid = req.params.cartid;
   const myHeaders = new Headers();
-  myHeaders.append("X-Auth-Token", "44v4r4o38ki0gznr4kn5exdznzft69c");
+  myHeaders.append("X-Auth-Token", "oe5uijwhafstu69o0vj50kr7q5jv5c7");
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Access-Control-Allow-Origin", "*");
 
